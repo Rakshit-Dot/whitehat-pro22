@@ -1,80 +1,77 @@
-var starImg, fairyImg, bgImg;
-var fairy, fairyVoice;
-var star, starBody;
-var staticOption;
-var gravityOption;
+var canvas;
+var music;
+var rect1,rect2,rect3,rect4;
+var box
 
-const Engine = Matter.Engine;
-const World = Matter.World;
-const Bodies = Matter.Bodies;
-const Body = Matter.Body;
-
-function preload() {
-	starImg = loadImage("images/star.png");
-	fairyImg = loadAnimation("images/fairyImage1.png", "images/fairyImage2.png");
-	bgImg = loadImage("images/starNight.png");
-	fairyVoice = loadSound("sound/JoyMusic.mp3");
-
+function preload(){
+    music = loadSound("music.mp3");
+    
 }
 
-function setup() {
-	createCanvas(800, 750);
 
+function setup(){
+    canvas = createCanvas(800,600);
 
-	fairyVoice.play();
+   
 
-	fairy = createSprite(130, 520);
-	fairy.addAnimation("fairyflying", fairyImg);
-	fairy.scale = 0.25;
+    //create 4 different surfaces
+rect1 = createSprite(95,600,150,50);
+rect1.shapeColor="lightblue";
 
-	star = createSprite(650, 30);
-	star.addImage(starImg);
-	star.scale = 0.2;
+rect2 = createSprite(300,600,150,50);
+rect2.shapeColor="red";
 
-	engine = Engine.create();
-	world = engine.world;
+rect3 = createSprite(515,600,150,50);
+rect3.shapeColor="yellow";
 
-	starBody = Bodies.circle(650, 30, 5, { restitution: 0.5, isStatic: true });
-	World.add(world, starBody);
+rect4 = createSprite(715,600,150,50);
+rect4.shapeColor="green";
 
-	Engine.run(engine);
+    //create box sprite and give velocity
+box = createSprite(random(20,750),300,20,20);
+box.velocityX = -5
+box.velocityY = 5
 
 }
-
 
 function draw() {
-	background(bgImg);
+    background(rgb(169,169,169));
+    //create edgeSprite
+    var edges=createEdgeSprites();
 
-	//   Engine.update(engine);
-	star.x = starBody.position.x;
-	star.y = starBody.position.y;
+    //add condition to check if box touching surface and make it box
 
-	console.log(star.y);
-	if(star.y > 470 && starBody.position.y > 470 ){
-		Matter.Body.setStatic(starBody,true);
-	}
-	//   keyPressed();
-
-	drawSprites();
-
-
+if (istouching(box,rect2)){
+    box.shapeColor= "red";
+    music.play();
+    bounceoff(box,rect2);
 }
 
-function keyPressed() {
-	//write code here
-	if (keyCode === LEFT_ARROW) {
-		fairy.x = fairy.x - 10;
-	}
-
-	if (keyCode === RIGHT_ARROW) {
-		fairy.x = fairy.x + 10;
-	}
-
-	if (keyCode === DOWN_ARROW) {
-		Matter.Body.setStatic(starBody, false);
-		// star.velocityY=8
-	}
-
-
+if(istouching(box,rect1)){
+    box.shapeColor= "lightblue";
+    bounceoff(box,rect1);
+} 
+    
+    if(istouching(box,rect4)){
+    box.shapeColor= "green";
+    bounceoff(box,rect4);
 }
+
+
+if (istouching(box,rect3)){
+    box.velocityX= 0
+    box.velocityY= 0
+    box.shapeColor= "yellow"
+    music.pause();
+    }
+
+box.bounceOff(edges);
+
+
+
+
+
+    drawSprites();
+}
+
 
